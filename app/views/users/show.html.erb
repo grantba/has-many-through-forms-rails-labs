@@ -1,1 +1,5 @@
+<h2><%= @user.username %>, here are all of the posts that you have commented on:</h2>
+<% @user.comments.each do |comment| %>
+    <ul><%= link_to comment.post.title, post_path(comment.post) %></ul>
+    <% end %>
 

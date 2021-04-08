@@ -1,1 +1,53 @@
+<h2><%= @post.title %></h2>
+<p><%= @post.content %></p>
+
+<% if @post.categories %>
+<h2>This posts categories are:</h2>
+<ol>
+<li><% @post.categories.each do |category| %>
+    <%= category.name %></li>
+    <% end %>
+</ol>
+<% end %>
+
+<% @comments = @post.comments.group(:user_id).distinct %>
+
+<% if @post.comments %>
+<h2>This posts comments are:</h2>
+<ul>
+<li><% @comments.each do |user_comment| %>
+    <% user = User.find_by(id: user_comment.user_id) %>
+    href: <%= link_to user.username, user_path(user) %> says: </li><br>
+    <% user.comments.each do |comment| %>
+        <p><%= user.username %> says: <%= comment.content %></p>
+        <% end %>
+    <% end %>
+</ul>
+<% end %>
+
+<br>
+<h3>Add a new comment to this post</h3>
+<%= form_for @post.comments.build do |f| %>
+        <%= f.label :content, "Comment:" %><br>
+        <%= f.text_area :content %>
+    <br><br>
+
+    <%= f.label "Choose an existing user:" %><br><br>
+    <%= f.collection_select :user_id, User.all, :id, :username, :prompt => true, include_blank: true %>
+    <br><br>
+    <%= f.label "Create a new user:" %><br><br>
+    <%= f.fields_for :user, User.new do |user_fields| %>
+        <%= user_fields.label :username, "Username:" %>
+        <%= user_fields.text_field :username %><br>
+        <%= user_fields.label :email, "Email:    " %>
+        <%= user_fields.text_field :email %>
+        <% end %><br>
+
+    <%= f.hidden_field :post_id, value: @post.id %>
+<br>
+<%= f.submit %>
+<% end %>
+
+
+
 
